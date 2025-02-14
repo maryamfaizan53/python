@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... existing code ... -->
+    <style>
+        /* ... existing styles ... */
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <!-- ... existing buttons ... -->
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('button');
+        let currentInput = '';
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.textContent;
+                
+                switch(value) {
+                    case 'C':
+                        currentInput = '';
+                        display.value = '';
+                        break;
+                        
+                    case '=':
+                        try {
+                            // Replace × and ÷ with * and / for JavaScript evaluation
+                            let calculation = currentInput
+                                .replace(/×/g, '*')
+                                .replace(/÷/g, '/');
+                            
+                            // Handle percentage calculations
+                            calculation = calculation.replace(/(\d+)%/g, '($1/100)');
+                            
+                            const result = eval(calculation);
+                            currentInput = result.toString();
+                            display.value = currentInput;
+                        } catch (error) {
+                            display.value = 'Error';
+                            currentInput = '';
+                        }
+                        break;
+                        
+                    default:
+                        currentInput += value;
+                        display.value = currentInput;
+                }
+            });
+        });
+
+        // Add keyboard support
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            
+            // Number keys and operators
+            if (/[\d+\-*/.()]/.test(key)) {
+                currentInput += key;
+                display.value = currentInput;
+            }
+            
+            // Enter key for calculation
+            if (key === 'Enter') {
+                const equalsButton = document.querySelector('.equals');
+                equalsButton.click();
+            }
+            
+            // Backspace for deletion
+            if (key === 'Backspace') {
+                currentInput = currentInput.slice(0, -1);
+                display.value = currentInput;
+            }
+            
+            // Escape key for clear
+            if (key === 'Escape') {
+                const clearButton = document.querySelector('.clear');
+                clearButton.click();
+            }
+        });
+    </script>
+</body>
+</html> 
